@@ -1,0 +1,176 @@
+[tool.poetry]
+name = "fastapi-template"
+version = "0.1.0"
+description = ""
+authors = ["Galtozzy <galtozzy+git@gmail.com>"]
+readme = "README.md"
+packages = [{include = "fastapi_template"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.103.1"
+uvicorn = {extras = ["standard"], version = "^0.23.2"}
+gunicorn = "^21.2.0"
+orjson = "^3.9.7"
+pydantic-settings = "^2.0.3"
+environs = "^9.5.0"
+
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.12.0"
+black = "^23.9.0"
+mypy = "^1.5.1"
+pytest-asyncio = "^0.21.1"
+coverage = {extras = ["toml"], version = "^7.3.1"}
+pytest = "^7.4.2"
+pytest-cov = "^4.1.0"
+pytest-socket = "^0.6.0"
+pytest-mock = "^3.11.1"
+taskipy = "^1.12.0"
+ipython = "^8.15.0"
+
+[tool.taskipy.tasks]
+run-app-local = "uvicorn app.main:create_app --reload"
+format-and-lint = "task isort && task mypy-lint && task black"
+
+isort = "isort app tests"
+tests = "pytest tests/ -v"
+black = "black app/ tests/"
+
+isort-lint = "task isort -c"
+black-lint = "task black --check"
+mypy-lint = "mypy --install-types --non-interactive app/"
+poetry-check = "poetry check"
+pip-check = "pip check"
+
+[tool.isort]
+# isort configuration:
+# https://github.com/timothycrosley/isort/wiki/isort-Settings
+include_trailing_comma = true
+use_parentheses = true
+# See https://github.com/timothycrosley/isort#multi-line-output-modes
+multi_line_output = 3
+line_length = 120
+known_first_party = "app"
+default_section = "THIRDPARTY"
+sections = "FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
+
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+extend-exclude = '''
+(
+  /(
+    # Exclude folders
+    | app/migrations
+  )/
+  # Exclude files
+)
+'''
+skip-string-normalization = true
+
+
+[tool.mypy]
+# Mypy configuration:
+# https://mypy.readthedocs.io/en/latest/config_file.html
+allow_redefinition = false
+check_untyped_defs = true
+disallow_untyped_decorators = false
+disallow_any_generics = false
+disallow_untyped_calls = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = true
+ignore_errors = false
+ignore_missing_imports = true
+implicit_reexport = true
+local_partial_types = true
+strict_optional = true
+strict_equality = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unreachable = true
+warn_no_return = false
+pretty = true
+follow_imports = "silent"
+follow_imports_for_stubs = true
+show_error_codes = true
+plugins = ["pydantic.mypy", ]
+
+exclude = [
+    'test_',
+]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "html.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "docker.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "app.migrations.*"
+ignore_errors = true
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+    '--strict-markers',
+    '--strict-config',
+    '--allow-unix-socket',
+    '--allow-hosts=127.0.0.1,127.0.1.1,::1',
+    '--tb=short',
+    '--cov=app/',
+    '--cov-branch',
+    '--cov-report=term-missing:skip-covered',
+    '--cov-report=html',
+    '--cov-fail-under=80',
+]
+asyncio_mode = "auto"
+python_files = "test*.py"
+# Directories that are not visited by pytest collector:
+norecursedirs = "*.egg .eggs dist build docs .tox .git __pycache__ config docker etc"
+testpaths = [
+    "tests",
+]
+
+[tool.coverage.run]
+# Coverage configuration:
+# https://coverage.readthedocs.io/en/latest/config.html
+omit = [
+    '*/core/settings*',
+    '*/core/init_app*',
+    '*/core/logging_config*',
+    '*/core/pydantic_base*',
+]
+concurrency = ['thread']
+
+
+[tool.coverage.report]
+omit = [
+    '*/core/settings*',
+    '*/core/init_app*',
+    '*/core/logging_config*',
+    '*/core/pydantic_base*',
+]
+
+exclude_lines = [
+    'pragma: no cover',
+    '@abstract',
+    'def __repr__',
+    'raise AssertionError',
+    'raise NotImplementedError',
+    'if __name__ == .__main__.:',
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
