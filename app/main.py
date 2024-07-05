@@ -7,6 +7,7 @@ from app.core.init_app import init_middlewares, register_events, register_router
 from app.core.logging_config import get_logger
 from app.core.settings import get_settings
 
+
 logger = get_logger(__name__)
 config = get_settings()
 

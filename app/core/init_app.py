@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
@@ -6,18 +6,19 @@ from starlette.middleware.cors import CORSMiddleware
 from app.apps.routes import api_v1_to_routers_map
 from app.core.settings import get_settings
 
+
 settings = get_settings()
 
 
 def create_on_startup_handler(app: FastAPI) -> Callable:
-    async def on_startup():
+    async def on_startup() -> None:
         pass
 
     return on_startup
 
 
 def create_on_shutdown_handler(app: FastAPI) -> Callable:
-    async def on_shutdown():
+    async def on_shutdown() -> None:
         pass
 
     return on_shutdown
@@ -28,8 +29,8 @@ def init_middlewares(app: FastAPI) -> None:
         CORSMiddleware,
         allow_origins=['*'],
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=['*'],
+        allow_headers=['*'],
     )
 
 

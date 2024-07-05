@@ -4,6 +4,7 @@ from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 PROJECT_ROOT = Path(__file__).parent.parent
 BASE_DIR = PROJECT_ROOT.parent
 
@@ -17,6 +18,7 @@ ONE_MONTH: int = ONE_DAY * 30
 
 class AppSettings(BaseSettings):
     """Service settings"""
+
     model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
 
     # App

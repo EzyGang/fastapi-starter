@@ -4,6 +4,7 @@ from fastapi import APIRouter
 
 from app.apps.health.api.v1 import router as health_router
 
+
 v1_routers: tuple[APIRouter, ...] = (health_router,)
 
 

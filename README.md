@@ -4,15 +4,15 @@ This repository is to be used as a starter for FastAPI based Python applications
 
 ## Features
 
-- [Python3.11+](https://www.python.org/)
+- [Python3.12+](https://www.python.org/)
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [Pydantic](https://docs.pydantic.dev/latest/)
 
 ## Prerequisites
 
-- [Python3.11+](https://www.python.org/)
+- [Python3.12+](https://www.python.org/)
 - [Poetry](https://python-poetry.org/) for project management
-- [Docker](https://docs.docker.com/) for image builds
+- [Docker](https://docs.docker.com/) for image builds (use `--target runtime-image`)
 
 
 ## Project Structure
@@ -39,9 +39,9 @@ This repository is to be used as a starter for FastAPI based Python applications
 -  `poetry lock`- updates `poetry.lock`
 -  `poetry update`- updates packages locally and updates `poetry.lock`
 
-## Project tasks list (uses taskipy to execute, example: `poetry run task isort`)
--  `isort`- sort imports
--  `black`- run black on project files
--  `tests`- execute tests
--  `format-and-lint`- shortcut of all three of the above
--  `run-app-local`- launches app locally
+## Project tasks list (uses taskipy to execute, example: `poetry run task mypy-lint`)
+-  `ruff` - runs ruff on a project files
+-  `tests` - runs tests
+-  `mypy-lint` - run mypy lint
+-  `ruff-lint` - runs ruff check (to use in CI/CD)
+-  `format-and-lint`- shortcut to run ruff and mypy

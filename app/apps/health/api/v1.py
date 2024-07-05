@@ -4,6 +4,7 @@ from fastapi.responses import ORJSONResponse
 from app.apps.health.dtos import PingResponse
 from app.core.logging_config import get_logger
 
+
 logger = get_logger(__name__)
 router = APIRouter(
     prefix='/health',
@@ -14,5 +15,5 @@ router = APIRouter(
 
 @router.get('/ping', response_model=PingResponse, status_code=status.HTTP_200_OK)
 async def ping() -> PingResponse:
-    logger.info(f'Ping request')
+    logger.info('Ping request')
     return PingResponse()

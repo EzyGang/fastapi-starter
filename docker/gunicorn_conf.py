@@ -1,42 +1,49 @@
 import os
 
-from environs import Env
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 env_file = os.getenv('GUNICORN_ENV_FILE', '.env')
 
-env = Env()
-env.read_env(env_file)
 
-web_concurrency = env.int('WEB_CONCURRENCY', None)
-default_web_concurrency = 4
-host = env('HOST', '0.0.0.0')
-port = env('PORT', 80)
-use_loglevel = env('LOG_LEVEL', 'info')
-use_bind = f'{host}:{port}'
-cores = os.cpu_count()
+class EnvironSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=env_file,
+    )
 
-if web_concurrency:
-    assert web_concurrency > 0
-else:
-    web_concurrency = default_web_concurrency
+    WEB_CONCURRENCY: int = Field(default=4, ge=0)
 
-accesslog_var = env('ACCESS_LOG', '-')
-use_accesslog = accesslog_var or None
-errorlog_var = env('ERROR_LOG', '-')
-use_errorlog = errorlog_var or None
+    HOST: str = Field(default='0.0.0.0')
+    PORT: int = Field(default=8000)
+    LOG_LEVEL: str = Field(default='info')
+
+    ACCESS_LOG: str = Field(default='-')
+    ERROR_LOG: str = Field(default='-')
+
+    GRACEFUL_TIMEOUT: int = Field(default=60, ge=0)
+    WORKER_CONNECTIONS: int = Field(default=10000, ge=0)
+    MAX_WORKER_REQUESTS: int = Field(default=2500, ge=0)
+    MAX_WORKER_REQUESTS_JITTER: int = Field(default=500, ge=0)
+    TIMEOUT: int = Field(default=60, ge=0)
+    KEEP_ALIVE: int = Field(default=15, ge=0)
+    BACKLOG: int = Field(default=0, ge=0)
+
+
+_settings = EnvironSettings()
 
 # Gunicorn config variables
-loglevel = use_loglevel
-workers = web_concurrency
-bind = use_bind
-errorlog = use_errorlog
+loglevel = _settings.LOG_LEVEL
+workers = _settings.WEB_CONCURRENCY
+bind = f'{_settings.HOST}:{_settings.PORT}'
 worker_tmp_dir = '/dev/shm'
-accesslog = use_accesslog
-graceful_timeout = env.int('GRACEFUL_TIMEOUT', 60)
-worker_connections = env.int('WORKER_CONNECTIONS', 10000)
-max_requests = env.int('MAX_WORKER_REQUESTS', 2500)
-max_requests_jitter = env.int('MAX_WORKER_REQUESTS_JITTER', 500)
-timeout = env.int('TIMEOUT', 60)
-keepalive = env.int('KEEP_ALIVE', 5)
-backlog = env.int('BACKLOG', 0)
+errorlog = _settings.ERROR_LOG or None
+accesslog = _settings.ACCESS_LOG or None
+
+graceful_timeout = _settings.GRACEFUL_TIMEOUT
+worker_connections = _settings.WORKER_CONNECTIONS
+max_requests = _settings.MAX_WORKER_REQUESTS
+max_requests_jitter = _settings.MAX_WORKER_REQUESTS_JITTER
+timeout = _settings.TIMEOUT
+keepalive = _settings.KEEP_ALIVE
+backlog = _settings.BACKLOG

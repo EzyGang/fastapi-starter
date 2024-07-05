@@ -3,9 +3,9 @@ from logging import Handler, Logger, LogRecord, getLogger
 from logging.config import dictConfig
 from logging.handlers import QueueHandler, QueueListener
 from queue import SimpleQueue as Queue
-from typing import List
 
 from app.core.settings import get_settings
+
 
 settings = get_settings()
 log_level = settings.LOG_LEVEL
@@ -59,7 +59,7 @@ def setup_logging_queue() -> None:
     queue: Queue = Queue()
     root: Logger = getLogger()
 
-    handlers: List[Handler] = []
+    handlers: list[Handler] = []
 
     handler: LocalQueueHandler = LocalQueueHandler(queue)
     root.addHandler(handler)
