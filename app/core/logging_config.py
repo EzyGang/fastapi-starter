@@ -56,7 +56,7 @@ def setup_logging_queue() -> None:
     handlers.
 
     """
-    queue: Queue = Queue()
+    queue: Queue[LogRecord] = Queue()
     root: Logger = getLogger()
 
     handlers: list[Handler] = []

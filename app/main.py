@@ -3,7 +3,7 @@ import asyncio
 import uvicorn
 from fastapi import FastAPI
 
-from app.core.init_app import init_middlewares, register_events, register_routers
+from app.core.init_app import init_middlewares, lifespan, register_routers
 from app.core.logging_config import get_logger
 from app.core.settings import get_settings
 
@@ -14,10 +14,9 @@ config = get_settings()
 
 def create_app() -> FastAPI:
     logger.info('Initializing app...')
-    app = FastAPI(title=config.APP_NAME)
+    app = FastAPI(title=config.APP_NAME, lifespan=lifespan)
     init_middlewares(app)
     register_routers(app)
-    register_events(app)
     logger.info('App is up and running!')
     return app
 

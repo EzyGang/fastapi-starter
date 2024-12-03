@@ -1,4 +1,4 @@
-FROM python:3.12-alpine as compile-image
+FROM python:3.12-alpine AS compile-image
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
@@ -7,26 +7,33 @@ ENV PYTHONFAULTHANDLER=1 \
 ENV PIP_DEFAULT_TIMEOUT=100 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
-    POETRY_VERSION=1.8.2
+    UV_PROJECT_ENVIRONMENT="/venv" \
+    UV_COMPILE_BYTECODE=1
 
 ENV PYTHONPATH=/app
 
-RUN pip install poetry
+RUN pip install uv
 RUN apk add gcc python3-dev libc-dev
 
 WORKDIR /app
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml uv.lock ./
 
-RUN poetry config virtualenvs.create false && \
-    poetry install --without=dev --no-interaction --no-ansi --no-cache
+RUN uv sync --frozen
 
-RUN pip uninstall poetry -y
+# Remove libs
+FROM python:3.12-alpine AS remove-libs
+
 RUN apk del gcc python3-dev libc-dev
 
+# Runtime
+FROM python:3.12-alpine AS runtime-image
 
-FROM python:3.12-alpine as runtime-image
+ENV UV_PROJECT_ENVIRONMENT="/venv"
+ENV UV_COMPILE_BYTECODE=1
+ENV PATH="$UV_PROJECT_ENVIRONMENT/bin:$PATH"
+ENV PATH="/venv/bin:$PATH"
 
-COPY --from=compile-image /usr/local /usr/local
+RUN pip install uv
 
 ENV PYTHONPATH=/app
 WORKDIR /app
@@ -34,10 +41,10 @@ WORKDIR /app
 ARG RELEASE_VERSION=0.0.0
 ENV RELEASE=$RELEASE_VERSION
 
-COPY docker/gunicorn_conf.py /gunicorn_conf.py
 COPY ./app /app/app
+COPY --from=remove-libs /venv /venv
 
-CMD ["gunicorn", "-k uvicorn.workers.UvicornWorker", "-c", "/gunicorn_conf.py", "app.main:app"]
+CMD ["uv", "run", "gunicorn", "-k uvicorn_worker.UvicornWorker", "-c", "/gunicorn_conf.py", "app.main:app"]
 
 RUN addgroup -S nonroot && adduser -S nonroot -G nonroot
 

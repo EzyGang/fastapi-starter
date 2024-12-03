@@ -1,0 +1,52 @@
+name: Pre-build Checks & Tests
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          allow-prereleases: true
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install --no-cache-dir uv
+          uv sync --frozen
+      - name: Execute Tests
+        run: uv run task tests
+  lint:
+    name: Code Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          allow-prereleases: true
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install --no-cache-dir uv
+          uv sync --frozen
+      - name: Run ruff
+        run: uv run task ruff-lint
+      - name: Run mypy
+        run: uv run task mypy-lint
+      - name: Run pip check
+        run: uv run task pip-check
