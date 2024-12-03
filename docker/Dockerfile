@@ -38,6 +38,7 @@ ENV RELEASE=$RELEASE_VERSION
 
 # Copy source and venv
 COPY ./app /app/app
+COPY ./docker/gunicorn_conf.py /gunicorn_conf.py
 COPY --from=compile-image /venv /venv
 
 CMD ["uv", "run", "gunicorn", "-k uvicorn_worker.UvicornWorker", "-c", "/gunicorn_conf.py", "app.main:app"]
