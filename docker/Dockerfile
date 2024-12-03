@@ -41,6 +41,7 @@ WORKDIR /app
 ARG RELEASE_VERSION=0.0.0
 ENV RELEASE=$RELEASE_VERSION
 
+# Copy source and venv
 COPY ./app /app/app
 COPY --from=remove-libs /venv /venv
 
