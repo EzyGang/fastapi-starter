@@ -31,7 +31,7 @@ jobs:
           TAG: ${{ github.event.inputs.tag }}
         run: |
           tag_fin=$TAG
-          lock_hash=$(shasum -a 256 poetry.lock)
+          lock_hash=$(shasum -a 256 uv.lock)
           # docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTRY}
 
           # if !(docker manifest inspect $DOCKER_REGISTRY/$IMAGE_NAME:cache-${lock_hash::8})
