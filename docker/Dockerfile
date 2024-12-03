@@ -38,7 +38,7 @@ ENV RELEASE=$RELEASE_VERSION
 
 # Copy source and venv
 COPY ./app /app/app
-COPY --from=remove-libs /venv /venv
+COPY --from=compile-image /venv /venv
 
 CMD ["uv", "run", "gunicorn", "-k uvicorn_worker.UvicornWorker", "-c", "/gunicorn_conf.py", "app.main:app"]
 
