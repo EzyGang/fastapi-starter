@@ -18,7 +18,7 @@ RUN apk add gcc python3-dev libc-dev
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
 
-RUN uv sync --frozen
+RUN uv sync --frozen --no-dev
 
 # Runtime
 FROM python:3.12-alpine AS runtime-image
