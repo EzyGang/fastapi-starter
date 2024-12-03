@@ -20,11 +20,6 @@ COPY pyproject.toml uv.lock ./
 
 RUN uv sync --frozen
 
-# Remove libs
-FROM python:3.12-alpine AS remove-libs
-
-RUN apk del gcc python3-dev libc-dev
-
 # Runtime
 FROM python:3.12-alpine AS runtime-image
 
