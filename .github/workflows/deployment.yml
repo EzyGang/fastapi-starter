@@ -27,8 +27,8 @@ jobs:
       - name: Build & Push Image
         env:
           DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY || 'your_docker_registry' }}
-          # DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          # DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME || 'your_docker_user' }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD || 'your_docker_password'  }}
           IMAGE_NAME: ${{ vars.IMAGE_NAME || 'fastapi-docker' }}
           TAG: ${{ github.event.inputs.tag }}
         run: |
