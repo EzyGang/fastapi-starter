@@ -1,6 +1,6 @@
 [project]
 name = "fastapi-template"
-version = "0.1.0"
+version = "1.0.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -35,8 +35,8 @@ ruff = "ruff format ./app/ ./docker/ ./tests/ && ruff check ./app/ ./docker/ ./t
 tests = "PYTHONPATH=. pytest tests/ -v"
 
 ruff-lint = "ruff check ./app"
-mypy-lint = "mypy --install-types --non-interactive ./app/"
-poetry-check = "poetry check"
+mypy-lint-call = "mypy --install-types --non-interactive app/"
+mypy-lint = "task mypy-lint-call || uv pip install -r .mypy_cache/missing_stubs && task mypy-lint-call"
 pip-check = "pip check"
 
 [tool.ruff]

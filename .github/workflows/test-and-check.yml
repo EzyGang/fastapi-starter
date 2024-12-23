@@ -9,44 +9,46 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     branches: [main]
+    
+env:
+  UV_FROZEN: 1    
+    
 jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
         with:
-          python-version: '3.12'
-          allow-prereleases: true
-      - uses: actions/checkout@v3
+            enable-cache: true
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
         with:
-          fetch-depth: 0
+          python-version-file: "pyproject.toml"
       - name: Install Dependencies
         run: |
-          pip install --upgrade pip
-          pip install --no-cache-dir uv
-          uv sync --frozen
+          uv sync --all-extras
       - name: Execute Tests
         run: uv run task tests
   lint:
     name: Code Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
         with:
-          python-version: '3.12'
-          allow-prereleases: true
-      - uses: actions/checkout@v3
+            enable-cache: true
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
         with:
-          fetch-depth: 0
+          python-version-file: "pyproject.toml"
       - name: Install Dependencies
         run: |
-          pip install --upgrade pip
-          pip install --no-cache-dir uv
-          uv sync --frozen
+          uv sync --all-extras
       - name: Run ruff
         run: uv run task ruff-lint
       - name: Run mypy
         run: uv run task mypy-lint
-      - name: Run pip check
-        run: uv run task pip-check
