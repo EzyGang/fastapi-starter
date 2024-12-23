@@ -35,13 +35,15 @@ jobs:
           release_version=$(uv tree --depth=0  2> /dev/null | awk '{print $2}' | cut -c 2-)
           tag_fin=${TAG:-$release_version}
           lock_hash=$(shasum -a 256 uv.lock)
-
+          
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY
+          
           if !(docker manifest inspect $DOCKER_REGISTRY/$IMAGE_NAME:${tag_fin})
           then
             docker buildx build --push --file docker/Dockerfile \
               --tag $DOCKER_REGISTRY/$IMAGE_NAME:${tag_fin} \
-              --cache-to type=registry,ref=$DOCKER_REGISTRY/$IMAGE_NAME:deps-${lock_hash::8},compression=zstd \
-              --cache-from type=registry,ref=$DOCKER_REGISTRY/$IMAGE_NAME:deps-${lock_hash::8} \
+              --cache-to "type=registry,ref=$DOCKER_REGISTRY/$IMAGE_NAME:deps-${lock_hash:0:8},compression=zstd" \
+              --cache-from "type=registry,ref=$DOCKER_REGISTRY/$IMAGE_NAME:deps-${lock_hash:0:8}" \
               --build-arg RELEASE_VERSION="$release_version" \
               --target runtime-image \
               .
